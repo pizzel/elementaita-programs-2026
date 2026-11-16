@@ -550,6 +550,107 @@ body {
   border-left-color: #10b981;
 }
 
+/* Active / Live Session Styling */
+.session-card.is-active {
+  border: 2px solid #ef4444 !important;
+  border-left: 6px solid #ef4444 !important;
+  background: #fffafa !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.18), var(--shadow-lg) !important;
+  position: relative;
+  animation: livePulseGlow 3s infinite ease-in-out;
+}
+
+@keyframes livePulseGlow {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2), var(--shadow-lg); }
+  50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.08), var(--shadow-xl); }
+}
+
+.live-indicator-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  animation: pulse 2s infinite;
+}
+
+.live-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: inline-block;
+  animation: liveDotPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes liveDotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.6); }
+}
+
+/* Floating Live Banner */
+.live-status-banner {
+  display: none;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid #ef4444;
+}
+
+.live-status-banner.visible {
+  display: flex;
+}
+
+.live-status-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-status-info span.time {
+  color: #94a3b8;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.live-jump-btn {
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.live-jump-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
 .session-header {
   display: flex;
   align-items: flex-start;

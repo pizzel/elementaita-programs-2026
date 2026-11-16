@@ -3,6 +3,7 @@
 let currentProgramKey = 'wyde';
 let activeDayFilter = 'all'; // 'all' or day number (1..5)
 let currentSearchQuery = '';
+let hasAutoScrolled = false;
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,6 +27,16 @@ document.addEventListener('DOMContentLoaded', () => {
   setupModals();
   registerServiceWorker();
 
+  // Auto-scroll to active day / session on page load
+  setTimeout(() => {
+    autoDetectAndScroll(true);
+  }, 400);
+
+  // Re-check active session every 60 seconds
+  setInterval(() => {
+    autoDetectAndScroll(false);
+  }, 60000);
+
   // Listen to hash changes
   window.addEventListener('hashchange', () => {
     if (window.location.hash === '#ewip') {
@@ -40,7 +51,6 @@ function setupProgramTabs() {
   const tabs = document.querySelectorAll('.program-tab');
   tabs.forEach(tab => {
     tab.addEventListener('click', (e) => {
-      // If we are on index.html with in-page switching
       const targetProg = tab.getAttribute('data-program');
       if (targetProg) {
         e.preventDefault();
@@ -64,6 +74,11 @@ function switchProgram(progKey) {
   });
 
   renderProgram(progKey);
+
+  // Scroll to active session for this program
+  setTimeout(() => {
+    autoDetectAndScroll(true);
+  }, 300);
 }
 
 function renderProgram(progKey) {
@@ -113,6 +128,17 @@ function renderHero(program) {
     <h2 class="hero-title">${program.title}</h2>
     <p class="hero-subtitle">${program.cohort} · ${program.targetAudience}</p>
     
+    <!-- Live Status Banner (Displays when session is ongoing) -->
+    <div id="live-status-banner" class="live-status-banner">
+      <div class="live-status-info">
+        <span class="live-indicator-dot"></span>
+        <span id="live-status-text">Checking schedule...</span>
+      </div>
+      <button class="live-jump-btn" onclick="jumpToActiveProgram()">
+        ⚡ Jump to Session
+      </button>
+    </div>
+
     <div class="hero-details-grid">
       <div class="hero-detail-item">
         <span class="icon">🏛️</span>
@@ -150,9 +176,70 @@ function toggleAccordion(btn) {
   }
 }
 
+// Current Date & Time Detection (with query parameter simulation support)
+function getEventCurrentState(program) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const testDay = urlParams.get('testDay') || urlParams.get('day');
+  const testTime = urlParams.get('testTime') || urlParams.get('time');
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const dayStr = String(now.getDate()).padStart(2, '0');
+  let currentDate = `${year}-${month}-${dayStr}`;
+
+  const hours = String(now.getHours()).padStart(2, '0');
+  const mins = String(now.getMinutes()).padStart(2, '0');
+  let currentTime = `${hours}:${mins}`;
+
+  // Allow test override (e.g., ?day=3&time=10:00)
+  if (testDay) {
+    const dNum = parseInt(testDay, 10);
+    const targetDayObj = program.days.find(d => d.dayNumber === dNum);
+    if (targetDayObj) currentDate = targetDayObj.date;
+  }
+  if (testTime) {
+    currentTime = testTime;
+  }
+
+  // Find matching day
+  const matchedDay = program.days.find(d => d.date === currentDate);
+  if (!matchedDay) {
+    return { isEventDay: false, currentDate, currentTime, matchedDay: null, activeSession: null };
+  }
+
+  // Find active session
+  let activeSession = null;
+  let activeSessionIndex = -1;
+  let nextSession = null;
+
+  for (let i = 0; i < matchedDay.sessions.length; i++) {
+    const s = matchedDay.sessions[i];
+    if (s.startTime <= currentTime && currentTime < s.endTime) {
+      activeSession = s;
+      activeSessionIndex = i;
+      break;
+    } else if (currentTime < s.startTime && !nextSession) {
+      nextSession = s;
+    }
+  }
+
+  return {
+    isEventDay: true,
+    currentDate,
+    currentTime,
+    matchedDay,
+    activeSession,
+    activeSessionIndex,
+    nextSession
+  };
+}
+
 function renderDaySelector(program) {
   const container = document.getElementById('day-selector-container');
   if (!container) return;
+
+  const state = getEventCurrentState(program);
 
   let html = `
     <div class="day-scroll-bar">
@@ -164,9 +251,11 @@ function renderDaySelector(program) {
 
   program.days.forEach(day => {
     const isAct = activeDayFilter == day.dayNumber;
+    const isToday = state.matchedDay && state.matchedDay.dayNumber === day.dayNumber;
+
     html += `
       <button class="day-btn ${isAct ? 'active' : ''}" onclick="filterByDay(${day.dayNumber})">
-        <span>Day ${day.dayNumber}</span>
+        <span>Day ${day.dayNumber} ${isToday ? '🔴' : ''}</span>
         <span class="day-sub">${day.dayName.split(',')[1].trim()}</span>
       </button>
     `;
@@ -181,6 +270,13 @@ function filterByDay(dayNum) {
   const program = PROGRAMS_DATA.programs[currentProgramKey];
   renderDaySelector(program);
   renderSessions(program);
+
+  if (dayNum !== 'all') {
+    const el = document.getElementById(`day-${dayNum}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 }
 
 function setupSearch() {
@@ -198,6 +294,27 @@ function renderSessions(program) {
   const container = document.getElementById('sessions-container');
   if (!container) return;
 
+  const state = getEventCurrentState(program);
+
+  // Update live status banner
+  const banner = document.getElementById('live-status-banner');
+  const bannerText = document.getElementById('live-status-text');
+
+  if (banner && bannerText) {
+    if (state.isEventDay && state.activeSession) {
+      bannerText.innerHTML = `<strong>HAPPENING NOW:</strong> ${state.activeSession.title} <span class="time">(${state.activeSession.time})</span>`;
+      banner.classList.add('visible');
+    } else if (state.isEventDay && state.nextSession) {
+      bannerText.innerHTML = `<strong>UP NEXT:</strong> ${state.nextSession.title} <span class="time">(${state.nextSession.time})</span>`;
+      banner.classList.add('visible');
+    } else if (state.isEventDay) {
+      bannerText.innerHTML = `<strong>TODAY:</strong> ${state.matchedDay.dayName} · Sentrim Lake Elementaita`;
+      banner.classList.add('visible');
+    } else {
+      banner.classList.remove('visible');
+    }
+  }
+
   let filteredDays = program.days;
   if (activeDayFilter !== 'all') {
     filteredDays = program.days.filter(d => d.dayNumber == activeDayFilter);
@@ -206,7 +323,8 @@ function renderSessions(program) {
   let html = '';
 
   filteredDays.forEach(day => {
-    // Filter sessions by search query if present
+    const isToday = state.matchedDay && state.matchedDay.dayNumber === day.dayNumber;
+
     const matchedSessions = day.sessions.filter(s => {
       if (!currentSearchQuery) return true;
       const q = currentSearchQuery;
@@ -225,7 +343,10 @@ function renderSessions(program) {
       <div class="day-section" id="day-${day.dayNumber}">
         <div class="day-section-header">
           <div>
-            <h3 class="day-section-title">📅 ${day.dayName}</h3>
+            <h3 class="day-section-title">
+              📅 ${day.dayName}
+              ${isToday ? '<span class="badge badge-orange" style="font-size:10px;">TODAY</span>' : ''}
+            </h3>
             <p class="day-section-theme">${day.theme}</p>
           </div>
           <span class="badge badge-gray">${matchedSessions.length} session${matchedSessions.length > 1 ? 's' : ''}</span>
@@ -233,15 +354,21 @@ function renderSessions(program) {
         <div class="session-cards-list">
     `;
 
-    matchedSessions.forEach(session => {
+    matchedSessions.forEach((session, sIdx) => {
+      const isThisActive = isToday && state.activeSession && state.activeSession.startTime === session.startTime;
       const catClass = `category-${session.category || 'training'}`;
+      const cardId = `session-${day.dayNumber}-${sIdx}`;
+
       html += `
-        <div class="session-card ${catClass}">
+        <div class="session-card ${catClass} ${isThisActive ? 'is-active' : ''}" id="${cardId}">
           <div class="session-header">
             <div class="time-badge">
               <span>⏰</span> ${session.time}
             </div>
-            <span class="badge ${getCategoryBadge(session.category)}">${formatCategory(session.category)}</span>
+            <div style="display:flex; gap:6px; align-items:center;">
+              ${isThisActive ? '<span class="live-indicator-tag"><span class="live-indicator-dot"></span> LIVE NOW</span>' : ''}
+              <span class="badge ${getCategoryBadge(session.category)}">${formatCategory(session.category)}</span>
+            </div>
           </div>
           
           <h4 class="session-title">${session.title}</h4>
@@ -279,6 +406,50 @@ function renderSessions(program) {
   }
 
   container.innerHTML = html;
+}
+
+// Automatic detection and smart smooth scrolling
+function autoDetectAndScroll(shouldScroll = true) {
+  const program = PROGRAMS_DATA.programs[currentProgramKey];
+  const state = getEventCurrentState(program);
+
+  // Render fresh state
+  renderSessions(program);
+  renderDaySelector(program);
+
+  if (!shouldScroll || !state.isEventDay) return;
+
+  // 1. If an exact session is active right now -> center on that session!
+  if (state.activeSession) {
+    const cardId = `session-${state.matchedDay.dayNumber}-${state.activeSessionIndex}`;
+    const el = document.getElementById(cardId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+  }
+
+  // 2. If it is an event day (e.g. Wednesday, 18 Nov) -> scroll to that day's section!
+  const dayEl = document.getElementById(`day-${state.matchedDay.dayNumber}`);
+  if (dayEl) {
+    dayEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// User-triggered jump button
+function jumpToActiveProgram() {
+  const program = PROGRAMS_DATA.programs[currentProgramKey];
+  const state = getEventCurrentState(program);
+
+  if (state.isEventDay) {
+    autoDetectAndScroll(true);
+  } else {
+    // If outside dates, jump to Day 1 or current filter
+    const firstDay = document.getElementById('day-1') || document.querySelector('.day-section');
+    if (firstDay) {
+      firstDay.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 }
 
 function getCategoryBadge(cat) {
@@ -366,7 +537,6 @@ function setupModals() {
   const qrModal = document.getElementById('qr-modal');
   if (!qrModal) return;
 
-  // Close when clicking outside
   qrModal.addEventListener('click', (e) => {
     if (e.target === qrModal) {
       closeQRModal();
@@ -380,19 +550,18 @@ function openQRModal(progKey) {
   const modal = document.getElementById('qr-modal');
   if (!modal || !program) return;
 
-  const currentUrl = window.location.origin + window.location.pathname;
-  let targetUrl = currentUrl;
+  const baseUrl = 'https://elementaita-programs-2026.pages.dev';
+  let targetUrl = baseUrl;
   if (targetKey === 'wyde') {
-    targetUrl = targetUrl.replace(/ewip\.html|index\.html|\/$/, '') + '/wyde.html';
+    targetUrl = `${baseUrl}/wyde`;
   } else if (targetKey === 'ewip') {
-    targetUrl = targetUrl.replace(/wyde\.html|index\.html|\/$/, '') + '/ewip.html';
+    targetUrl = `${baseUrl}/ewip`;
   }
 
   document.getElementById('modal-qr-img').src = program.qrImage;
   document.getElementById('modal-qr-title').innerText = `${program.code} Online Program`;
   document.getElementById('modal-qr-url').innerText = targetUrl;
   
-  // Set download links
   const downloadPngBtn = document.getElementById('btn-download-qr-png');
   if (downloadPngBtn) {
     downloadPngBtn.href = program.qrImage;
@@ -425,7 +594,7 @@ function copyProgramUrl() {
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {
-      // Offline caching optional fallback
+      // Offline fallback
     });
   }
 }
