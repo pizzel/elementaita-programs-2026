@@ -18,6 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
     currentProgramKey = 'wyde';
   }
 
+  // Set default active day if today is an event day
+  const initProg = PROGRAMS_DATA.programs[currentProgramKey];
+  if (initProg) {
+    const initState = getEventCurrentState(initProg);
+    if (initState.isEventDay && initState.matchedDay) {
+      activeDayFilter = initState.matchedDay.dayNumber;
+    }
+  }
+
   // Set up UI components
   setupProgramTabs();
   setupSmoothScrolling();
@@ -63,6 +72,15 @@ function setupProgramTabs() {
 function switchProgram(progKey) {
   currentProgramKey = progKey;
   window.location.hash = progKey;
+
+  // Set default active day if today is an event day for switched program
+  const prog = PROGRAMS_DATA.programs[progKey];
+  if (prog) {
+    const state = getEventCurrentState(prog);
+    if (state.isEventDay && state.matchedDay) {
+      activeDayFilter = state.matchedDay.dayNumber;
+    }
+  }
 
   // Update tabs visual state
   document.querySelectorAll('.program-tab').forEach(tab => {
@@ -291,25 +309,37 @@ function renderDaySelector(program) {
   container.innerHTML = html;
 
   // Smooth scroll active pill to center
-  setTimeout(centerActiveDayPill, 100);
+  setTimeout(centerActiveDayPill, 60);
+  setTimeout(centerActiveDayPill, 220);
 }
 
 // Center active day pill horizontally in the scrollbar
 function centerActiveDayPill() {
   const scrollContainer = document.querySelector('.day-scroll-bar');
-  const activePill = document.querySelector('.day-btn.active');
-  if (!scrollContainer || !activePill) return;
+  if (!scrollContainer) return;
 
-  const pillOffset = activePill.offsetLeft;
-  const pillWidth = activePill.offsetWidth;
-  const containerWidth = scrollContainer.offsetWidth;
+  // Prioritize selected active pill, or today pill
+  const activePill = document.querySelector('.day-btn.active') 
+    || document.querySelector('.day-btn.is-today');
+  if (!activePill) return;
 
-  const targetScroll = pillOffset - (containerWidth / 2) + (pillWidth / 2);
+  try {
+    activePill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  } catch (e) {}
 
-  scrollContainer.scrollTo({
-    left: Math.max(0, targetScroll),
-    behavior: 'smooth'
-  });
+  const pillRect = activePill.getBoundingClientRect();
+  const containerRect = scrollContainer.getBoundingClientRect();
+
+  const pillCenter = pillRect.left + (pillRect.width / 2);
+  const containerCenter = containerRect.left + (containerRect.width / 2);
+  const diff = pillCenter - containerCenter;
+
+  if (Math.abs(diff) > 2) {
+    scrollContainer.scrollBy({
+      left: diff,
+      behavior: 'smooth'
+    });
+  }
 }
 
 function filterByDay(dayNum) {
@@ -318,7 +348,7 @@ function filterByDay(dayNum) {
   renderDaySelector(program);
   renderSessions(program);
 
-  centerActiveDayPill();
+  setTimeout(centerActiveDayPill, 50);
 
   if (dayNum !== 'all') {
     const el = document.getElementById(`day-${dayNum}`);
@@ -500,9 +530,18 @@ function autoDetectAndScroll(shouldScroll = true) {
   const program = PROGRAMS_DATA.programs[currentProgramKey];
   const state = getEventCurrentState(program);
 
+  // If today is an event day and filter is 'all', auto-align to today's day
+  if (state.isEventDay && state.matchedDay && activeDayFilter === 'all') {
+    activeDayFilter = state.matchedDay.dayNumber;
+  }
+
   // Render fresh state
   renderSessions(program);
   renderDaySelector(program);
+
+  // Center horizontal active day pill
+  setTimeout(centerActiveDayPill, 60);
+  setTimeout(centerActiveDayPill, 200);
 
   if (!shouldScroll || !state.isEventDay) return;
 
@@ -512,7 +551,7 @@ function autoDetectAndScroll(shouldScroll = true) {
     if (liveCard) {
       setTimeout(() => {
         smoothScrollToElement(liveCard);
-      }, 100);
+      }, 120);
       return;
     }
   }
@@ -522,7 +561,7 @@ function autoDetectAndScroll(shouldScroll = true) {
   if (dayEl) {
     setTimeout(() => {
       smoothScrollToElement(dayEl);
-    }, 100);
+    }, 120);
   }
 }
 
@@ -531,8 +570,14 @@ function jumpToActiveProgram() {
   const program = PROGRAMS_DATA.programs[currentProgramKey];
   const state = getEventCurrentState(program);
 
-  if (state.isEventDay) {
-    autoDetectAndScroll(true);
+  if (state.isEventDay && state.matchedDay) {
+    activeDayFilter = state.matchedDay.dayNumber;
+    renderDaySelector(program);
+    renderSessions(program);
+    setTimeout(centerActiveDayPill, 50);
+    setTimeout(() => {
+      autoDetectAndScroll(true);
+    }, 100);
   } else {
     // If outside dates, jump to first day
     const firstDay = document.getElementById('day-1') || document.querySelector('.day-section');

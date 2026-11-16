@@ -369,11 +369,13 @@ body {
 
 .day-scroll-bar {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  padding: 2px 2px 6px 2px;
+  padding: 6px 16px 10px 16px;
+  scroll-behavior: smooth;
+  position: relative;
 }
 
 .day-scroll-bar::-webkit-scrollbar {
@@ -382,7 +384,7 @@ body {
 
 .day-btn {
   flex: 0 0 auto;
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   background: #ffffff;
   padding: 8px 16px;
   border-radius: var(--radius-full);
@@ -396,7 +398,6 @@ body {
   align-items: center;
   box-shadow: var(--shadow-sm);
   min-width: 95px;
-  scroll-margin: 20px;
 }
 
 .day-btn span.day-sub {
@@ -416,30 +417,39 @@ body {
   background: var(--primary, #0284c7) !important;
   color: #ffffff !important;
   border-color: var(--primary, #0284c7) !important;
-  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35) !important;
-  transform: scale(1.04);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4) !important;
+  transform: scale(1.05);
 }
 
 .day-btn.active span.day-sub {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-weight: 700;
 }
 
-/* Today pill highlight */
+/* Today pill highlight (when NOT active) */
 .day-btn.is-today {
-  border-color: #ef4444;
-  position: relative;
+  border: 2px solid #ef4444 !important;
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
 }
 
+.day-btn.is-today span.day-sub {
+  color: #dc2626 !important;
+  font-weight: 600 !important;
+}
+
+/* Today pill highlight (when ACTIVE) */
 .day-btn.is-today.active {
   background: linear-gradient(135deg, #ef4444, #dc2626) !important;
-  border-color: #dc2626 !important;
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.45) !important;
+  border-color: #b91c1c !important;
+  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.5) !important;
   color: #ffffff !important;
+  transform: scale(1.06);
 }
 
 .day-btn.is-today.active span.day-sub {
   color: #fee2e2 !important;
+  font-weight: 700 !important;
 }
 
 /* Controls Bar (Search + Filter + Quick Actions) */
