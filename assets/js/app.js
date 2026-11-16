@@ -269,7 +269,7 @@ function renderDaySelector(program) {
 
   let html = `
     <div class="day-scroll-bar">
-      <button class="day-btn ${activeDayFilter === 'all' ? 'active' : ''}" onclick="filterByDay('all')">
+      <button id="day-btn-all" class="day-btn ${activeDayFilter === 'all' ? 'active' : ''}" onclick="filterByDay('all')">
         <span>All Days</span>
         <span class="day-sub">16–20 Nov</span>
       </button>
@@ -280,7 +280,7 @@ function renderDaySelector(program) {
     const isToday = state.matchedDay && state.matchedDay.dayNumber === day.dayNumber;
 
     html += `
-      <button class="day-btn ${isAct ? 'active' : ''}" onclick="filterByDay(${day.dayNumber})">
+      <button id="day-btn-${day.dayNumber}" class="day-btn ${isAct ? 'active' : ''} ${isToday ? 'is-today' : ''}" onclick="filterByDay(${day.dayNumber})">
         <span>Day ${day.dayNumber} ${isToday ? '🔴' : ''}</span>
         <span class="day-sub">${day.dayName.split(',')[1].trim()}</span>
       </button>
@@ -289,6 +289,27 @@ function renderDaySelector(program) {
 
   html += `</div>`;
   container.innerHTML = html;
+
+  // Smooth scroll active pill to center
+  setTimeout(centerActiveDayPill, 100);
+}
+
+// Center active day pill horizontally in the scrollbar
+function centerActiveDayPill() {
+  const scrollContainer = document.querySelector('.day-scroll-bar');
+  const activePill = document.querySelector('.day-btn.active');
+  if (!scrollContainer || !activePill) return;
+
+  const pillOffset = activePill.offsetLeft;
+  const pillWidth = activePill.offsetWidth;
+  const containerWidth = scrollContainer.offsetWidth;
+
+  const targetScroll = pillOffset - (containerWidth / 2) + (pillWidth / 2);
+
+  scrollContainer.scrollTo({
+    left: Math.max(0, targetScroll),
+    behavior: 'smooth'
+  });
 }
 
 function filterByDay(dayNum) {
@@ -296,6 +317,8 @@ function filterByDay(dayNum) {
   const program = PROGRAMS_DATA.programs[currentProgramKey];
   renderDaySelector(program);
   renderSessions(program);
+
+  centerActiveDayPill();
 
   if (dayNum !== 'all') {
     const el = document.getElementById(`day-${dayNum}`);
@@ -660,7 +683,7 @@ function copyProgramUrl() {
 
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js?v=4').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=5').catch(() => {
       // Offline fallback
     });
   }
