@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Set up UI components
   setupProgramTabs();
+  setupSmoothScrolling();
   renderProgram(currentProgramKey);
   renderFacilitators();
   setupSearch();
@@ -433,6 +434,28 @@ function renderSessions(program) {
   container.innerHTML = html;
 }
 
+// Smooth scroll for all hash links and buttons
+function setupSmoothScrolling() {
+  document.addEventListener('click', (e) => {
+    const anchor = e.target.closest('a[href^="#"]');
+    if (!anchor) return;
+
+    const href = anchor.getAttribute('href');
+    if (!href || href === '#' || href === '#wyde' || href === '#ewip') return;
+
+    const targetId = href.substring(1);
+    const targetElement = document.getElementById(targetId);
+
+    if (targetElement) {
+      e.preventDefault();
+      smoothScrollToElement(targetElement);
+      try {
+        history.pushState(null, null, href);
+      } catch (err) {}
+    }
+  });
+}
+
 // Smooth scroll accounting for sticky headers
 function smoothScrollToElement(el) {
   if (!el) return;
@@ -637,7 +660,7 @@ function copyProgramUrl() {
 
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js?v=3').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=4').catch(() => {
       // Offline fallback
     });
   }
