@@ -1,0 +1,16 @@
+{
+  "name": "Sentrim Lake Elementaita Workshops 2026",
+  "short_name": "Elementaita 2026",
+  "description": "Online Program & Agenda for WYDE Youth and EWIP Kenya Cohort Trainings",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0284c7",
+  "icons": [
+    {
+      "src": "assets/qr/portal-qr.png",
+      "sizes": "1200x1200",
+      "type": "image/png"
+    }
+  ]
+}

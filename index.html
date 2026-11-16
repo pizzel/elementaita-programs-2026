@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Online Program: Sentrim Lake Elementaita Workshops 2026 | WYDE Youth & EWIP Kenya</title>
+  <meta name="description" content="Official Digital Program & Agenda for WYDE Youth (Navigating the Ballot) and EWIP Kenya Cohort Trainings at Sentrim Lake Elementaita, 16–20 November 2026." />
+  
+  <!-- Open Graph / Social Meta -->
+  <meta property="og:title" content="Sentrim Lake Elementaita Workshops 2026 - Online Program" />
+  <meta property="og:description" content="Official Agendas for WYDE Youth & EWIP Kenya Trainings (16-20 Nov 2026). Hosted by The Oslo Center & KIC." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/images/wyde-header-banner.png" />
+  
+  <!-- Web App Manifest & Favicon -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0284c7" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <!-- Top Sticky Header -->
+  <header class="top-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-wrapper">
+        <span class="brand-badge">TOC 2026</span>
+        <div class="brand-text">
+          <h1>Lake Elementaita Programs</h1>
+          <p>16 – 20 November 2026 · Kenya</p>
+        </div>
+      </a>
+      <div class="header-actions">
+        <button class="btn-icon" onclick="openQRModal()" title="View & Share QR Code" aria-label="QR Code">
+          📱
+        </button>
+        <button class="btn-icon" onclick="window.print()" title="Print Program" aria-label="Print">
+          🖨️
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dual Program Switcher Bar -->
+  <div class="program-switcher-wrapper">
+    <div class="program-switcher">
+      <button class="program-tab wyde-tab active" data-program="wyde">
+        <span class="program-dot wyde-dot"></span>
+        <span>WYDE Youth Agenda</span>
+      </button>
+      <button class="program-tab ewip-tab" data-program="ewip">
+        <span class="program-dot ewip-dot"></span>
+        <span>EWIP Kenya Agenda</span>
+      </button>
+    </div>
+  </div>
+
+  <main class="main-wrapper">
+
+    <!-- Hero Card (Dynamic Content for Active Program) -->
+    <div id="program-hero-container" class="program-hero"></div>
+
+    <!-- Quick Controls Bar: Search & Action Buttons -->
+    <div class="controls-bar">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="search-input" placeholder="Search sessions, topics or trainers..." />
+      </div>
+      <button class="quick-action-btn" onclick="openQRModal()">
+        <span>📱</span> Scan / Share QR
+      </button>
+      <a href="#venue-info" class="quick-action-btn">
+        <span>📍</span> Venue Info
+      </a>
+      <a href="#facilitators-info" class="quick-action-btn">
+        <span>👥</span> Trainers
+      </a>
+    </div>
+
+    <!-- Sticky Day Selector -->
+    <div id="day-selector-container" class="day-selector-container"></div>
+
+    <!-- Sessions Timeline List -->
+    <div id="sessions-container"></div>
+
+    <!-- QR Code Center Card -->
+    <section class="program-hero" style="margin-top: 30px;">
+      <h3 class="section-heading">📱 Quick QR Code Access</h3>
+      <p class="section-subheading">Share or print these QR codes for participants to scan from their phones:</p>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 14px;">
+        <!-- Portal QR -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; text-align: center;">
+          <img src="assets/qr/portal-qr.png" alt="Portal QR Code" style="width: 140px; height: 140px; margin: 0 auto 10px; display: block; background: #fff; padding: 6px; border-radius: 8px; border: 1px solid #e2e8f0;" />
+          <h4 style="font-size: 14px; font-weight: 700;">Main Workshop Portal</h4>
+          <p style="font-size: 11px; color: #64748b; margin-bottom: 10px;">Access both WYDE & EWIP</p>
+          <a href="assets/qr/portal-qr.png" download="elementaita-portal-qr.png" class="btn-secondary" style="font-size: 11px; padding: 6px 10px; width: 100%;">Download QR (PNG)</a>
+        </div>
+
+        <!-- WYDE QR -->
+        <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 16px; text-align: center;">
+          <img src="assets/qr/wyde-qr.png" alt="WYDE QR Code" style="width: 140px; height: 140px; margin: 0 auto 10px; display: block; background: #fff; padding: 6px; border-radius: 8px; border: 1px solid #bae6fd;" />
+          <h4 style="font-size: 14px; font-weight: 700; color: #0369a1;">WYDE Youth Program</h4>
+          <p style="font-size: 11px; color: #64748b; margin-bottom: 10px;">Direct link to WYDE agenda</p>
+          <a href="assets/qr/wyde-qr.png" download="wyde-youth-qr.png" class="btn-primary" style="font-size: 11px; padding: 6px 10px; width: 100%; background: #0284c7;">Download QR (PNG)</a>
+        </div>
+
+        <!-- EWIP QR -->
+        <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; padding: 16px; text-align: center;">
+          <img src="assets/qr/ewip-qr.png" alt="EWIP QR Code" style="width: 140px; height: 140px; margin: 0 auto 10px; display: block; background: #fff; padding: 6px; border-radius: 8px; border: 1px solid #fed7aa;" />
+          <h4 style="font-size: 14px; font-weight: 700; color: #c2410c;">EWIP Kenya Program</h4>
+          <p style="font-size: 11px; color: #64748b; margin-bottom: 10px;">Direct link to EWIP agenda</p>
+          <a href="assets/qr/ewip-qr.png" download="ewip-kenya-qr.png" class="btn-primary" style="font-size: 11px; padding: 6px 10px; width: 100%; background: #c2410c;">Download QR (PNG)</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Facilitators & Trainers Directory -->
+    <section id="facilitators-info" class="facilitators-section">
+      <h3 class="section-heading">👥 Lead Trainers & Consultants</h3>
+      <p class="section-subheading">Distinguished experts facilitating sessions at Sentrim Lake Elementaita</p>
+      <div id="facilitators-grid" class="facilitators-grid"></div>
+    </section>
+
+    <!-- Venue Information Card -->
+    <section id="venue-info" class="venue-card">
+      <h3 class="section-heading">📍 Venue & Logistics</h3>
+      <p class="section-subheading">Sentrim Lake Elementaita Lodge, Nakuru County, Kenya</p>
+      
+      <div class="venue-details-list">
+        <div class="venue-item">
+          <span class="icon">🏨</span>
+          <div>
+            <strong>Sentrim Lake Elementaita</strong>
+            <p style="color: #64748b; font-size: 12px;">Located along the shores of Lake Elementaita, off the Nairobi-Nakuru highway.</p>
+          </div>
+        </div>
+        <div class="venue-item">
+          <span class="icon">🛏️</span>
+          <div>
+            <strong>Check-in & Registration</strong>
+            <p style="color: #64748b; font-size: 12px;">Monday, 16 November from 12:00 PM – 7:00 PM at hotel reception.</p>
+          </div>
+        </div>
+        <div class="venue-item">
+          <span class="icon">🍽️</span>
+          <div>
+            <strong>Catering & Refreshments</strong>
+            <p style="color: #64748b; font-size: 12px;">All buffet meals and health/tea breaks served as scheduled in the Main Dining Hall and Lakeview Terrace.</p>
+          </div>
+        </div>
+        <div class="venue-item">
+          <span class="icon">🗺️</span>
+          <div>
+            <strong>Directions & Navigation</strong>
+            <p style="color: #64748b; font-size: 12px;"><a href="https://maps.google.com/?q=Sentrim+Elementaita+Lodge" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: underline;">Open in Google Maps ↗</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p><strong>Sentrim Lake Elementaita Cohort Trainings · 16 – 20 November 2026</strong></p>
+    <p class="footer-partners">
+      Organized by The Oslo Center (TOC) with support from Christian Democratic International Centre (KIC).<br/>
+      WYDE Political Parties implemented under ENoP and funded by the European Union.
+    </p>
+  </footer>
+
+  <!-- Mobile Bottom Quick Navigation -->
+  <nav class="mobile-nav-bar">
+    <button class="mobile-nav-item" onclick="switchProgram('wyde')">
+      <span class="icon">📘</span>
+      <span>WYDE</span>
+    </button>
+    <button class="mobile-nav-item" onclick="switchProgram('ewip')">
+      <span class="icon">📙</span>
+      <span>EWIP</span>
+    </button>
+    <button class="mobile-nav-item" onclick="openQRModal()">
+      <span class="icon">📱</span>
+      <span>QR Code</span>
+    </button>
+    <a href="#venue-info" class="mobile-nav-item">
+      <span class="icon">📍</span>
+      <span>Venue</span>
+    </a>
+  </nav>
+
+  <!-- QR Code Modal Dialog -->
+  <div id="qr-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-qr-title">Scan QR Code</h3>
+        <button class="modal-close" onclick="closeQRModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="qr-preview-box">
+          <img id="modal-qr-img" class="qr-image-display" src="" alt="QR Code" />
+          <p class="qr-title">Scan with Phone Camera</p>
+          <p class="qr-url-text" id="modal-qr-url"></p>
+        </div>
+        <div class="qr-actions-grid">
+          <a id="btn-download-qr-png" class="btn-primary" href="" download="">
+            ⬇️ Download PNG
+          </a>
+          <a id="btn-download-qr-svg" class="btn-secondary" href="" download="">
+            ⬇️ Download SVG
+          </a>
+        </div>
+        <div style="margin-top: 10px;">
+          <button class="btn-secondary" style="width: 100%;" onclick="copyProgramUrl()">
+            📋 Copy Program Link
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

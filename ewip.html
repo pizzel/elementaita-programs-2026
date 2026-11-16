@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>EWIP Kenya Online Program | Empowering Women in Politics 2026</title>
+  <meta name="description" content="Official Training Agenda for Empowering Women in Politics (EWIP) Kenya – 2026 Cohort Training. Sentrim Lake Elementaita, 16–20 November 2026." />
+  
+  <meta property="og:title" content="EWIP Kenya Online Program - 2026 Cohort Training" />
+  <meta property="og:description" content="Agenda for EWIP Kenya Training at Sentrim Lake Elementaita (16–20 Nov 2026). Hosted by The Oslo Center & KIC." />
+  <meta property="og:image" content="assets/images/ewip-logo.png" />
+  
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#c2410c" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body data-standalone="ewip">
+
+  <!-- Top Sticky Header -->
+  <header class="top-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-wrapper">
+        <span class="brand-badge" style="background:#c2410c;">EWIP KENYA</span>
+        <div class="brand-text">
+          <h1>Empowering Women in Politics</h1>
+          <p>Sentrim Lake Elementaita · 16–20 Nov 2026</p>
+        </div>
+      </a>
+      <div class="header-actions">
+        <a href="index.html" class="btn-icon" title="View All Programs" aria-label="Portal">
+          🏠
+        </a>
+        <button class="btn-icon" onclick="openQRModal('ewip')" title="QR Code" aria-label="QR Code">
+          📱
+        </button>
+        <button class="btn-icon" onclick="window.print()" title="Print Program" aria-label="Print">
+          🖨️
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Pill to switch to WYDE -->
+  <div class="program-switcher-wrapper">
+    <div class="program-switcher">
+      <a href="ewip.html" class="program-tab ewip-tab active">
+        <span class="program-dot ewip-dot"></span>
+        <span>EWIP Kenya Agenda</span>
+      </a>
+      <a href="wyde.html" class="program-tab wyde-tab">
+        <span class="program-dot wyde-dot"></span>
+        <span>Switch to WYDE Youth ↗</span>
+      </a>
+    </div>
+  </div>
+
+  <main class="main-wrapper">
+
+    <!-- Hero Card -->
+    <div id="program-hero-container" class="program-hero"></div>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="search-input" placeholder="Search EWIP sessions, topics, or speakers..." />
+      </div>
+      <button class="quick-action-btn" onclick="openQRModal('ewip')">
+        <span>📱</span> EWIP QR Code
+      </button>
+      <a href="#venue-info" class="quick-action-btn">
+        <span>📍</span> Venue Info
+      </a>
+      <a href="#facilitators-info" class="quick-action-btn">
+        <span>👥</span> Trainers
+      </a>
+    </div>
+
+    <!-- Day Selector -->
+    <div id="day-selector-container" class="day-selector-container"></div>
+
+    <!-- Sessions List -->
+    <div id="sessions-container"></div>
+
+    <!-- Facilitators Directory -->
+    <section id="facilitators-info" class="facilitators-section">
+      <h3 class="section-heading">👥 Lead Trainers & Consultants</h3>
+      <p class="section-subheading">Distinguished facilitators leading the EWIP Kenya cohort</p>
+      <div id="facilitators-grid" class="facilitators-grid"></div>
+    </section>
+
+    <!-- Venue Card -->
+    <section id="venue-info" class="venue-card">
+      <h3 class="section-heading">📍 Venue & Logistics</h3>
+      <p class="section-subheading">Sentrim Lake Elementaita Lodge, Nakuru County, Kenya</p>
+      
+      <div class="venue-details-list">
+        <div class="venue-item">
+          <span class="icon">🏨</span>
+          <div>
+            <strong>Sentrim Lake Elementaita</strong>
+            <p style="color: #64748b; font-size: 12px;">Along the shores of Lake Elementaita, off the Nairobi-Nakuru highway.</p>
+          </div>
+        </div>
+        <div class="venue-item">
+          <span class="icon">🛏️</span>
+          <div>
+            <strong>Check-in & Registration</strong>
+            <p style="color: #64748b; font-size: 12px;">Monday, 16 November from 12:00 PM – 7:00 PM at hotel reception.</p>
+          </div>
+        </div>
+        <div class="venue-item">
+          <span class="icon">🍽️</span>
+          <div>
+            <strong>Meals & Refreshments</strong>
+            <p style="color: #64748b; font-size: 12px;">Breakfast, lunch, health/tea breaks, and dinners served at the Main Dining Hall and Lakeview Terrace.</p>
+          </div>
+        </div>
+        <div class="venue-item">
+          <span class="icon">🗺️</span>
+          <div>
+            <strong>Directions</strong>
+            <p style="color: #64748b; font-size: 12px;"><a href="https://maps.google.com/?q=Sentrim+Elementaita+Lodge" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: underline;">Open in Google Maps ↗</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p><strong>Empowering Women in Politics: Kenya (EWIP) · 2026 Cohort Training</strong></p>
+    <p class="footer-partners">
+      Organized and hosted by The Oslo Center (TOC) with support from Christian Democratic International Centre (KIC).
+    </p>
+  </footer>
+
+  <!-- QR Modal -->
+  <div id="qr-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-qr-title">EWIP Kenya Program QR Code</h3>
+        <button class="modal-close" onclick="closeQRModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="qr-preview-box">
+          <img id="modal-qr-img" class="qr-image-display" src="assets/qr/ewip-qr.png" alt="EWIP QR Code" />
+          <p class="qr-title">Scan to View EWIP Kenya Program</p>
+          <p class="qr-url-text" id="modal-qr-url">https://pizzel.github.io/elementaita-programs-2026/ewip.html</p>
+        </div>
+        <div class="qr-actions-grid">
+          <a id="btn-download-qr-png" class="btn-primary" href="assets/qr/ewip-qr.png" download="ewip-program-qr.png" style="background:#c2410c;">
+            ⬇️ Download PNG
+          </a>
+          <a id="btn-download-qr-svg" class="btn-secondary" href="assets/qr/ewip-qr.svg" download="ewip-program-qr.svg">
+            ⬇️ Download SVG
+          </a>
+        </div>
+        <div style="margin-top: 10px;">
+          <button class="btn-secondary" style="width: 100%;" onclick="copyProgramUrl()">
+            📋 Copy Program Link
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
