@@ -3,7 +3,6 @@
 let currentProgramKey = 'wyde';
 let activeDayFilter = 'all'; // 'all' or day number (1..5)
 let currentSearchQuery = '';
-let hasAutoScrolled = false;
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
@@ -27,12 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
   setupModals();
   registerServiceWorker();
 
-  // Auto-scroll to active day / session on page load
+  // Smart auto-scroll to current day & session
   setTimeout(() => {
     autoDetectAndScroll(true);
-  }, 400);
+  }, 350);
 
-  // Re-check active session every 60 seconds
+  // Periodic re-check every 60 seconds
   setInterval(() => {
     autoDetectAndScroll(false);
   }, 60000);
@@ -75,10 +74,9 @@ function switchProgram(progKey) {
 
   renderProgram(progKey);
 
-  // Scroll to active session for this program
   setTimeout(() => {
     autoDetectAndScroll(true);
-  }, 300);
+  }, 250);
 }
 
 function renderProgram(progKey) {
@@ -132,10 +130,10 @@ function renderHero(program) {
     <div id="live-status-banner" class="live-status-banner">
       <div class="live-status-info">
         <span class="live-indicator-dot"></span>
-        <span id="live-status-text">Checking schedule...</span>
+        <span id="live-status-text">Checking live program...</span>
       </div>
       <button class="live-jump-btn" onclick="jumpToActiveProgram()">
-        ⚡ Jump to Session
+        ⚡ Scroll to Session
       </button>
     </div>
 
@@ -176,7 +174,7 @@ function toggleAccordion(btn) {
   }
 }
 
-// Current Date & Time Detection (with query parameter simulation support)
+// Robust Day and Time Calculation
 function getEventCurrentState(program) {
   const urlParams = new URLSearchParams(window.location.search);
   const testDay = urlParams.get('testDay') || urlParams.get('day');
@@ -185,30 +183,57 @@ function getEventCurrentState(program) {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
-  const dayStr = String(now.getDate()).padStart(2, '0');
-  let currentDate = `${year}-${month}-${dayStr}`;
+  const dayOfMonth = String(now.getDate()).padStart(2, '0');
+  let currentDate = `${year}-${month}-${dayOfMonth}`;
 
   const hours = String(now.getHours()).padStart(2, '0');
   const mins = String(now.getMinutes()).padStart(2, '0');
   let currentTime = `${hours}:${mins}`;
 
-  // Allow test override (e.g., ?day=3&time=10:00)
+  let matchedDay = null;
+
+  // 1. Check if user passed ?day= in URL (e.g. ?day=3 or ?day=wednesday)
   if (testDay) {
-    const dNum = parseInt(testDay, 10);
-    const targetDayObj = program.days.find(d => d.dayNumber === dNum);
-    if (targetDayObj) currentDate = targetDayObj.date;
-  }
-  if (testTime) {
-    currentTime = testTime;
+    const dLower = String(testDay).toLowerCase().trim();
+    if (dLower === '1' || dLower.includes('mon')) matchedDay = program.days[0];
+    else if (dLower === '2' || dLower.includes('tue')) matchedDay = program.days[1];
+    else if (dLower === '3' || dLower.includes('wed')) matchedDay = program.days[2];
+    else if (dLower === '4' || dLower.includes('thu')) matchedDay = program.days[3];
+    else if (dLower === '5' || dLower.includes('fri')) matchedDay = program.days[4];
   }
 
-  // Find matching day
-  const matchedDay = program.days.find(d => d.date === currentDate);
+  // 2. If not specified via URL, match by exact calendar date
   if (!matchedDay) {
-    return { isEventDay: false, currentDate, currentTime, matchedDay: null, activeSession: null };
+    matchedDay = program.days.find(d => d.date === currentDate);
   }
 
-  // Find active session
+  // 3. If still not matched, check by Day of Week (1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri)
+  if (!matchedDay) {
+    const dayOfWeek = now.getDay();
+    if (dayOfWeek === 1) matchedDay = program.days[0];
+    else if (dayOfWeek === 2) matchedDay = program.days[1];
+    else if (dayOfWeek === 3) matchedDay = program.days[2];
+    else if (dayOfWeek === 4) matchedDay = program.days[3];
+    else if (dayOfWeek === 5) matchedDay = program.days[4];
+  }
+
+  // If time override is passed in URL
+  if (testTime) {
+    currentTime = testTime.trim();
+  }
+
+  if (!matchedDay) {
+    return {
+      isEventDay: false,
+      currentDate,
+      currentTime,
+      matchedDay: null,
+      activeSession: null,
+      activeSessionIndex: -1
+    };
+  }
+
+  // Check matching active session
   let activeSession = null;
   let activeSessionIndex = -1;
   let nextSession = null;
@@ -274,7 +299,7 @@ function filterByDay(dayNum) {
   if (dayNum !== 'all') {
     const el = document.getElementById(`day-${dayNum}`);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      smoothScrollToElement(el);
     }
   }
 }
@@ -305,7 +330,7 @@ function renderSessions(program) {
       bannerText.innerHTML = `<strong>HAPPENING NOW:</strong> ${state.activeSession.title} <span class="time">(${state.activeSession.time})</span>`;
       banner.classList.add('visible');
     } else if (state.isEventDay && state.nextSession) {
-      bannerText.innerHTML = `<strong>UP NEXT:</strong> ${state.nextSession.title} <span class="time">(${state.nextSession.time})</span>`;
+      bannerText.innerHTML = `<strong>TODAY (${state.matchedDay.dayName.split(',')[0]}):</strong> Next session at ${state.nextSession.time} - ${state.nextSession.title}`;
       banner.classList.add('visible');
     } else if (state.isEventDay) {
       bannerText.innerHTML = `<strong>TODAY:</strong> ${state.matchedDay.dayName} · Sentrim Lake Elementaita`;
@@ -357,10 +382,10 @@ function renderSessions(program) {
     matchedSessions.forEach((session, sIdx) => {
       const isThisActive = isToday && state.activeSession && state.activeSession.startTime === session.startTime;
       const catClass = `category-${session.category || 'training'}`;
-      const cardId = `session-${day.dayNumber}-${sIdx}`;
+      const cardId = isThisActive ? 'active-live-card' : `session-${day.dayNumber}-${sIdx}`;
 
       html += `
-        <div class="session-card ${catClass} ${isThisActive ? 'is-active' : ''}" id="${cardId}">
+        <div class="session-card ${catClass} ${isThisActive ? 'is-active' : ''}" id="${cardId}" data-time="${session.startTime}">
           <div class="session-header">
             <div class="time-badge">
               <span>⏰</span> ${session.time}
@@ -408,6 +433,22 @@ function renderSessions(program) {
   container.innerHTML = html;
 }
 
+// Smooth scroll accounting for sticky headers
+function smoothScrollToElement(el) {
+  if (!el) return;
+  const header = document.querySelector('.top-header');
+  const dayBar = document.querySelector('.day-selector-container');
+  const headerOffset = (header ? header.offsetHeight : 60) + (dayBar ? dayBar.offsetHeight : 45) + 15;
+
+  const elementPosition = el.getBoundingClientRect().top;
+  const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+  window.scrollTo({
+    top: offsetPosition,
+    behavior: 'smooth'
+  });
+}
+
 // Automatic detection and smart smooth scrolling
 function autoDetectAndScroll(shouldScroll = true) {
   const program = PROGRAMS_DATA.programs[currentProgramKey];
@@ -421,18 +462,21 @@ function autoDetectAndScroll(shouldScroll = true) {
 
   // 1. If an exact session is active right now -> center on that session!
   if (state.activeSession) {
-    const cardId = `session-${state.matchedDay.dayNumber}-${state.activeSessionIndex}`;
-    const el = document.getElementById(cardId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const liveCard = document.getElementById('active-live-card');
+    if (liveCard) {
+      setTimeout(() => {
+        smoothScrollToElement(liveCard);
+      }, 100);
       return;
     }
   }
 
-  // 2. If it is an event day (e.g. Wednesday, 18 Nov) -> scroll to that day's section!
+  // 2. If it is an event day (e.g. Wednesday) -> scroll to that day's section!
   const dayEl = document.getElementById(`day-${state.matchedDay.dayNumber}`);
   if (dayEl) {
-    dayEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => {
+      smoothScrollToElement(dayEl);
+    }, 100);
   }
 }
 
@@ -444,10 +488,10 @@ function jumpToActiveProgram() {
   if (state.isEventDay) {
     autoDetectAndScroll(true);
   } else {
-    // If outside dates, jump to Day 1 or current filter
+    // If outside dates, jump to first day
     const firstDay = document.getElementById('day-1') || document.querySelector('.day-section');
     if (firstDay) {
-      firstDay.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      smoothScrollToElement(firstDay);
     }
   }
 }
@@ -593,7 +637,7 @@ function copyProgramUrl() {
 
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=3').catch(() => {
       // Offline fallback
     });
   }
