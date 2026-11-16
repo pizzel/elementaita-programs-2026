@@ -299,7 +299,7 @@ function renderDaySelector(program) {
 
     html += `
       <button id="day-btn-${day.dayNumber}" class="day-btn ${isAct ? 'active' : ''} ${isToday ? 'is-today' : ''}" onclick="filterByDay(${day.dayNumber})">
-        <span>Day ${day.dayNumber} ${isToday ? '🔴' : ''}</span>
+        <span>Day ${day.dayNumber} ${isToday ? '<span class="live-pill-dot" aria-label="Today"></span>' : ''}</span>
         <span class="day-sub">${day.dayName.split(',')[1].trim()}</span>
       </button>
     `;

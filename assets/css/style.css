@@ -452,6 +452,62 @@ body {
   font-weight: 700 !important;
 }
 
+/* Live Circle Dot Indicator inside Day Pill */
+.live-pill-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-left: 5px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
+/* When pill is ACTIVE (red background) -> live circle is crisp luminous WHITE */
+.day-btn.is-today.active .live-pill-dot {
+  background: #ffffff !important;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.85);
+  animation: livePillPulseWhite 1.5s infinite;
+}
+
+/* When pill is INACTIVE (soft coral background) -> live circle is bright RED */
+.day-btn.is-today:not(.active) .live-pill-dot {
+  background: #ef4444 !important;
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.85);
+  animation: livePillPulseRed 1.5s infinite;
+}
+
+@keyframes livePillPulseWhite {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.85);
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes livePillPulseRed {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.85);
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
 /* Controls Bar (Search + Filter + Quick Actions) */
 .controls-bar {
   display: flex;
