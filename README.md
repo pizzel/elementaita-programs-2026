@@ -8,10 +8,10 @@ Hosted and organized by **The Oslo Center (TOC)** with support from the **Christ
 
 ## 🌐 Live Online Programs & Links
 
-- **Main Hub & Portal**: [https://oslocenter-kenya-programs.pages.dev/](https://oslocenter-kenya-programs.pages.dev/)
-- **WYDE Youth Program**: [https://oslocenter-kenya-programs.pages.dev/wyde.html](https://oslocenter-kenya-programs.pages.dev/wyde.html)
-- **EWIP Kenya Program**: [https://oslocenter-kenya-programs.pages.dev/ewip.html](https://oslocenter-kenya-programs.pages.dev/ewip.html)
-- **Printable Table Standees & QR Signs**: [https://oslocenter-kenya-programs.pages.dev/qr-print.html](https://oslocenter-kenya-programs.pages.dev/qr-print.html)
+- **Main Hub & Portal**: [https://elementaita-programs-2026.pages.dev/](https://elementaita-programs-2026.pages.dev/)
+- **WYDE Youth Program**: [https://elementaita-programs-2026.pages.dev/wyde](https://elementaita-programs-2026.pages.dev/wyde)
+- **EWIP Kenya Program**: [https://elementaita-programs-2026.pages.dev/ewip](https://elementaita-programs-2026.pages.dev/ewip)
+- **Printable Table Standees & QR Signs**: [https://elementaita-programs-2026.pages.dev/qr-print.html](https://elementaita-programs-2026.pages.dev/qr-print.html)
 - **GitHub Pages Fallback**: [https://pizzel.github.io/elementaita-programs-2026/](https://pizzel.github.io/elementaita-programs-2026/)
 
 ---
