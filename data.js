@@ -402,7 +402,7 @@ const PROGRAMS_DATA = {
               startTime: "06:30",
               endTime: "10:00",
               title: "BREAKFAST AND DEPARTURE",
-              description: "Farewell breakfast, hotel check-out, travel reimbursements, and departure from Sentrim Lake Elementaita.",
+              description: "Farewell breakfast, hotel check-out, and departure from Sentrim Lake Elementaita.",
               responsible: "Hotel / All participants",
               category: "admin",
               location: "Main Dining Hall & Reception"

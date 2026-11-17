@@ -1,4 +1,4 @@
-const CACHE_NAME = 'elementaita-programs-v7';
+const CACHE_NAME = 'elementaita-programs-v8';
 const STATIC_ASSETS = [
   './',
   './index.html',
